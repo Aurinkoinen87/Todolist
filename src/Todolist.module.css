@@ -1,0 +1,19 @@
+.error {
+    border: red 1px solid;
+   }
+
+.error_message {
+    color: red;
+   }
+
+.active_filter {
+    background: aquamarine;
+}
+
+.is_done {
+    opacity: 0.5;
+}
+
+.gap {
+    padding: 10px;
+}
