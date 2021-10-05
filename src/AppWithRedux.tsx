@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid'
 import { AddtodolistAC } from './store/todolists-reducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { rootReducerType } from './store/state'
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 
 export type TaskType = {
