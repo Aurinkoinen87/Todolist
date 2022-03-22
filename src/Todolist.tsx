@@ -1,26 +1,27 @@
-import React, { useCallback } from "react";
-import InputItem from './inputItem'
-import {EditableSpan} from './EditableSpan'
-import { ListType } from './AppWithRedux'
-import Button from '@material-ui/core/Button'
-import IconButton from '@material-ui/core/IconButton'
-import DeleteIcon from '@material-ui/icons/Delete';
+import React, { useCallback, useEffect } from "react";
+import InputItem from './common-components/inputItem'
+import {EditableSpan} from './common-components/EditableSpan'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete';
 import style from './Todolist.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { addTaskAC } from './store/tasks-reducer'
+import { createNewTask } from './store/tasks-reducer'
 import { rootReducerType } from './store/state'
-import { TasksState } from './AppWithRedux'
 import {Task} from './Task'
-import { RemovetodolistAC, ChangeTitleAC, ChangeFilterAC } from './store/todolists-reducer'
+import { deleteTodolistTC, updateTodolist, ChangeFilterAC } from './store/todolists-reducer'
+import { TasksStateType } from './store/tasks-reducer'
+import { ErrorStateType } from './store/errors-reducer'
 
 
 
 
+export type TodolistsFilterType = 'all' | 'active' | 'completed'
 
 type PropsType = {
     title: string
     id: string
-    status: ListType
+    status: TodolistsFilterType
 }
 
 
@@ -30,15 +31,19 @@ export const Todolist = React.memo(function (props: PropsType) {
 
     console.log('TodolistRendered')
 
+
+
     const dispatch = useDispatch()
-    const tasks = useSelector<rootReducerType, TasksState>(state => state.tasks)
 
+    const tasks = useSelector<rootReducerType, TasksStateType>(state => state.tasks)
 
+    const errorsState = useSelector<rootReducerType, ErrorStateType>(state => state.errors)
+    
 
 
     const addTask = useCallback((value: string) => {
 
-        dispatch(addTaskAC(props.id, value))
+        dispatch(createNewTask(props.id, value))
 
     }, [props.id])
 
@@ -46,20 +51,20 @@ export const Todolist = React.memo(function (props: PropsType) {
 
     const editTodolistTitle = useCallback((title: string) => {
 
-        dispatch(ChangeTitleAC(props.id, title))
+        dispatch(updateTodolist(props.id, title))
 
     }, [props.id])
 
 
     const deleteTodolist = useCallback(() => {
 
-        dispatch(RemovetodolistAC(props.id))
+        dispatch(deleteTodolistTC(props.id))
 
     }, [props.id])
 
 
 
-    const changeTasksStatus = useCallback((status: ListType) => {
+    const changeTasksStatus = useCallback((status: TodolistsFilterType) => {
 
         dispatch(ChangeFilterAC(props.id, status))
     }, [props.id])
@@ -74,12 +79,12 @@ export const Todolist = React.memo(function (props: PropsType) {
 
 
     if (props.status === 'active') {
-        tasksForToDoList = tasksForToDoList.filter(i => i.isDone === false)
+        tasksForToDoList = tasksForToDoList.filter(i => i.status === 0)
 
     }
 
     if (props.status === 'completed') {
-        tasksForToDoList = tasksForToDoList.filter(i => i.isDone === true)
+        tasksForToDoList = tasksForToDoList.filter(i => i.status === 1)
 
     }
 
@@ -89,7 +94,7 @@ export const Todolist = React.memo(function (props: PropsType) {
             <EditableSpan title={props.title} editedItem={editTodolistTitle} />
 
 
-            <IconButton onClick={() => deleteTodolist()}>
+            <IconButton onClick={() => deleteTodolist()} disabled={errorsState.status === 'loading'}>
                 <DeleteIcon />
             </IconButton>
         </h3>
@@ -97,7 +102,7 @@ export const Todolist = React.memo(function (props: PropsType) {
         <InputItem addItem={addTask} />
         <ul>
             {tasksForToDoList.map((t) => {
-               return <Task key={t.id} task={t} todolistId={props.id} />
+               return <Task key={t.id} task={t} todolistId={props.id} errorStatus={errorsState.status} />
                 
             }
             )}

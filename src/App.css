@@ -1,0 +1,11 @@
+.app_wrapper {
+    margin: 0 auto;
+    width: 1280px
+}
+
+.init_circle {
+    position: fixed;
+    top: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%)
+}
